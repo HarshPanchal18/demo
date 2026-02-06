@@ -16,6 +16,7 @@ jobs:
         id: vars
         run: |
           echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+          echo "${GITHUB_SHA::7}"
 
       # ---- Checkout manifest repo ----
       - name: Checkout manifest repo
@@ -35,7 +36,7 @@ jobs:
         run: |
           cd manifests/manifests
           kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
-          kustomize build . > generated-manifest.yaml
+          echo "$(kustomize build .)" > generated-manifest.yaml
 
       - name: Commit and push changes
         run: |
