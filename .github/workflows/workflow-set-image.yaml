@@ -21,9 +21,10 @@ jobs:
       - name: Checkout manifest repo
         uses: actions/checkout@v4
         with:
-          repository: HarshPanchal18/timoni-manifest
+          repository: https://github.com/HarshPanchal18/timoni-manifest
           token: ${{ secrets.MANIFEST_REPO_TOKEN }}
           path: manifests
+          persist-credentials: false
 
       - name: Install kustomize
         run: |
@@ -38,9 +39,13 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          cd manifests
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
           git add .
-          git commit -m "chore: update nginx image to ${{ steps.vars.outputs.TAG }}" || exit 0
-          git push
+          git commit -m "chore: update nginx image to ${{ steps.vars.outputs.TAG }}" || echo "no changes to commit"
+
+          # Ensure push uses the PAT provided in the secret
+          git remote set-url origin https://x-access-token:${{ secrets.MANIFEST_REPO_TOKEN }}@github.com/HarshPanchal18/timoni-manifest.git
+          git push origin HEAD:main
