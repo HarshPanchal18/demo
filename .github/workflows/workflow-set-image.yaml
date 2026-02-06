@@ -27,21 +27,10 @@ jobs:
           path: manifests
           persist-credentials: false
 
-      - name: Install kustomize
-        run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
-          sudo mv kustomize /usr/local/bin/
-
-      - name: Update image in kustomize
+      - name: Set SHA to image digest
         run: |
           cd manifests/manifests
-          yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' -oyaml > image-values.yaml
-
-      - name: Set SHA to image digest
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' > ./manifests/manifests/image-SHA-values.yaml
-          # cmd: yq -i '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' ./manifests/manifests/image-values.yaml
+          yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' > ./manifests/timoni/image-SHA-values.yaml
 
       - name: Commit and push changes
         run: |
@@ -49,7 +38,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          git add manifests/
+          git add .
           git commit -m "chore: update nginx image to ${{ steps.vars.outputs.TAG }}" || echo "no changes to commit"
 
           # Ensure push uses the PAT provided in the secret
