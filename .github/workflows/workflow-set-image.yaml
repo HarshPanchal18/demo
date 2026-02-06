@@ -1,0 +1,46 @@
+name: Build and Update Manifest Repo
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: vars
+        run: |
+          echo "TAG=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      # ---- Checkout manifest repo ----
+      - name: Checkout manifest repo
+        uses: actions/checkout@v4
+        with:
+          repository: HarshPanchal18/timoni-manifest
+          token: ${{ secrets.MANIFEST_REPO_TOKEN }}
+          path: manifests
+
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Update image in kustomize
+        run: |
+          cd manifests
+          kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
+          cd ..
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add .
+          git commit -m "chore: update nginx image to ${{ steps.vars.outputs.TAG }}" || exit 0
+          git push
