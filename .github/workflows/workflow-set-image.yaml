@@ -29,9 +29,9 @@ jobs:
 
       - name: Set SHA to image digest
         run: |
-          ls */*/*
+          # ls */*/*
           cd manifests/manifests
-          yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' > ./manifests/timoni/image-SHA-values.yaml
+          yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' > ./manifests/timoni/image-SHA-value.yaml
 
       - name: Commit and push changes
         run: |
