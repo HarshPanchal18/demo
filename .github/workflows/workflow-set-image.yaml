@@ -21,7 +21,7 @@ jobs:
       - name: Checkout manifest repo
         uses: actions/checkout@v4
         with:
-          repository: https://github.com/HarshPanchal18/timoni-manifest
+          repository: HarshPanchal18/timoni-manifest
           token: ${{ secrets.MANIFEST_REPO_TOKEN }}
           path: manifests
           persist-credentials: false
