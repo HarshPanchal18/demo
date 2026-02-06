@@ -35,8 +35,13 @@ jobs:
       - name: Update image in kustomize
         run: |
           cd manifests/manifests
-          kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
-          echo "$(kustomize build .)" > generated-manifest.yaml
+          yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' -oyaml > image-values.yaml
+
+      - name: Set SHA to image digest
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq e -n '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' > ./manifests/manifests/image-SHA-values.yaml
+          # cmd: yq -i '.values.image.digest = "${{ steps.vars.outputs.TAG }}"' ./manifests/manifests/image-values.yaml
 
       - name: Commit and push changes
         run: |
