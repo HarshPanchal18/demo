@@ -35,7 +35,7 @@ jobs:
         run: |
           cd manifests/manifests
           kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
-          kustiomize build . > generated-manifest.yaml
+          kustomize build . > generated-manifest.yaml
 
       - name: Commit and push changes
         run: |
