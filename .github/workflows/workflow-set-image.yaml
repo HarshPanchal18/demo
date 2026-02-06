@@ -34,6 +34,8 @@ jobs:
       - name: Update image in kustomize
         run: |
           pwd
+          ls
+
           cd manifests
           kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
 
