@@ -35,6 +35,7 @@ jobs:
         run: |
           cd manifests/manifests
           kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
+          kustiomize build . > generated-manifest.yaml
 
       - name: Commit and push changes
         run: |
@@ -42,7 +43,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-          git add manifests/kustomization.yaml
+          git add manifests/
           git commit -m "chore: update nginx image to ${{ steps.vars.outputs.TAG }}" || echo "no changes to commit"
 
           # Ensure push uses the PAT provided in the secret
