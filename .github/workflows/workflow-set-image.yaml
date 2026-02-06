@@ -32,9 +32,9 @@ jobs:
 
       - name: Update image in kustomize
         run: |
+          pwd
           cd manifests
           kustomize edit set image nginx=nginx:${{ steps.vars.outputs.TAG }}
-          cd ..
 
       - name: Commit and push changes
         run: |
